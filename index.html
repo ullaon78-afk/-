@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>음향 시설 점검 체크리스트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --warn: #f0883e;
+    --danger: #f85149;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+  }
+
+  .header {
+    max-width: 720px;
+    margin: 0 auto 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .badge {
+    background: var(--accent);
+    color: #0d1117;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-field label {
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .meta-field input, .meta-field select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .meta-field input:focus, .meta-field select:focus {
+    border-color: var(--accent);
+  }
+
+  .progress-bar-wrap {
+    max-width: 720px;
+    margin: 0 auto 24px;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .progress-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .section {
+    max-width: 720px;
+    margin: 0 auto 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-icon {
+    font-size: 16px;
+    width: 28px;
+    text-align: center;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    flex: 1;
+    letter-spacing: 0.2px;
+  }
+
+  .section-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .section-body {
+    padding: 6px 0;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: rgba(88,166,255,0.04); }
+
+  .item-check-wrap {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .radio-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: var(--text3);
+  }
+
+  .radio-btn:hover { border-color: var(--text2); }
+
+  .radio-btn.ok.active {
+    background: rgba(63,185,80,0.15);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  .radio-btn.warn.active {
+    background: rgba(240,136,62,0.15);
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+
+  .radio-btn.fail.active {
+    background: rgba(248,81,73,0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .item-content { flex: 1; min-width: 0; }
+
+  .item-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    line-height: 1.5;
+  }
+
+  .item-desc {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  .item-note {
+    width: 100%;
+    margin-top: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text2);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    padding: 6px 9px;
+    resize: none;
+    outline: none;
+    display: none;
+    transition: border-color 0.2s;
+  }
+
+  .item-note.visible { display: block; }
+  .item-note:focus { border-color: var(--warn); color: var(--text); }
+
+  .legend {
+    max-width: 720px;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+  }
+
+  .submit-wrap {
+    max-width: 720px;
+    margin: 32px auto 0;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:active { transform: scale(0.99); }
+
+  .result-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .result-modal.show { display: flex; }
+
+  .result-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .result-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text3); }
+
+  .issues-list { margin-bottom: 20px; }
+  .issues-title { font-size: 12px; color: var(--text2); font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px; }
+
+  .issue-item {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 6px;
+    border-left: 3px solid;
+  }
+
+  .issue-item.warn { background: rgba(240,136,62,0.1); border-color: var(--warn); color: #f0883e; }
+  .issue-item.fail { background: rgba(248,81,73,0.1); border-color: var(--danger); color: #f85149; }
+
+  .result-actions { display: flex; gap: 10px; }
+
+  .btn-secondary {
+    flex: 1;
+    padding: 10px;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-secondary:hover { background: var(--border); }
+
+  .btn-primary {
+    flex: 1;
+    padding: 10px;
+    background: var(--accent2);
+    color: #0d1117;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  @media (max-width: 480px) {
+    .meta-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span class="badge">AUDIO DEPT</span>
+    <span style="color:var(--text3); font-size:12px; font-family:'JetBrains Mono',monospace;" id="dateDisplay"></span>
+  </div>
+  <h1>음향 시설 점검 체크리스트</h1>
+  <div class="meta-row">
+    <div class="meta-field">
+      <label>점검 유형</label>
+      <select id="checkType">
+        <option value="수시">수시 점검</option>
+        <option value="주간">주간 점검</option>
+        <option value="월간">월간 점검</option>
+      </select>
+    </div>
+    <div class="meta-field">
+      <label>점검자</label>
+      <input type="text" id="inspector" placeholder="이름 입력">
+    </div>
+    <div class="meta-field">
+      <label>공연/행사명 (선택)</label>
+      <input type="text" id="eventName" placeholder="해당 시 입력">
+    </div>
+    <div class="meta-field">
+      <label>점검 공간</label>
+      <select id="location">
+        <option>메인 홀</option>
+        <option>소극장</option>
+        <option>연습실</option>
+        <option>무대 전체</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div> 정상</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--warn)"></div> 주의 (메모 필수)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div> 불량 (즉시 조치)</div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span class="progress-label">점검 진행률</span>
+    <span class="progress-pct" id="pctText">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div id="sections"></div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" onclick="submitCheck()">✓ 점검 완료 및 결과 확인</button>
+</div>
+
+<div class="result-modal" id="resultModal">
+  <div class="result-box">
+    <div class="result-title">📋 점검 결과 요약</div>
+    <div class="result-summary" id="resultSummary"></div>
+    <div class="issues-list" id="issuesList"></div>
+    <div class="result-actions">
+      <button class="btn-secondary" onclick="closeModal()">닫기</button>
+      <button class="btn-primary" onclick="copyResult()">결과 복사</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const checkData = [
+  {
+    id: "main_system",
+    icon: "🔊",
+    title: "메인 음향 시스템",
+    items: [
+      { id: "main_amp", name: "메인 앰프 동작 상태", desc: "전원 인가 후 출력 레벨 및 이상음 확인" },
+      { id: "main_speaker", name: "메인 스피커 정상 출력", desc: "좌·우 채널 균형 및 음질 확인" },
+      { id: "sub_speaker", name: "서브우퍼 동작 확인", desc: "저음 재생 및 위상 확인" },
+      { id: "monitor", name: "무대 모니터 스피커", desc: "전 채널 출력 및 피드백 여부 확인" },
+    ]
+  },
+  {
+    id: "console",
+    icon: "🎛️",
+    title: "콘솔 및 신호 처리",
+    items: [
+      { id: "console_main", name: "메인 믹싱 콘솔", desc: "페이더, EQ, 버스 채널 동작 확인" },
+      { id: "console_monitor", name: "모니터 콘솔 (별도 운용 시)", desc: "모니터 믹스 채널 동작 확인" },
+      { id: "eq", name: "그래픽 EQ / 프로세서", desc: "설정값 유지 및 바이패스 기능 확인" },
+      { id: "signal_flow", name: "신호 흐름 전체 체크", desc: "소스 → 콘솔 → 앰프 → 스피커 경로 확인" },
+    ]
+  },
+  {
+    id: "mic",
+    icon: "🎤",
+    title: "마이크 및 무선 시스템",
+    items: [
+      { id: "wireless_tx", name: "무선 송신기 (바디팩/핸드헬드)", desc: "배터리 잔량 및 RF 신호 세기 확인" },
+      { id: "wireless_rx", name: "무선 수신기 안테나", desc: "안테나 위치 및 수신 레벨 확인" },
+      { id: "wired_mic", name: "유선 마이크 및 스탠드", desc: "음질·잡음·커넥터 접촉 확인" },
+      { id: "mic_cable", name: "마이크 케이블 상태", desc: "단선, 피복 손상, 커넥터 마모 확인" },
+    ]
+  },
+  {
+    id: "playback",
+    icon: "💿",
+    title: "재생 및 영상 음향",
+    items: [
+      { id: "cd_player", name: "CD/미디어 플레이어", desc: "재생, 정지, 큐 기능 확인" },
+      { id: "computer_audio", name: "컴퓨터 오디오 인터페이스", desc: "드라이버 상태 및 레이턴시 확인" },
+      { id: "av_sync", name: "영상-음향 싱크", desc: "영상 시스템 연동 시 딜레이 확인" },
+    ]
+  },
+  {
+    id: "power_cable",
+    icon: "⚡",
+    title: "전원 및 배선",
+    items: [
+      { id: "power_strip", name: "음향용 전원 분전반", desc: "차단기 상태 및 접지 확인" },
+      { id: "power_cable_main", name: "주요 전원 케이블", desc: "과열, 피복 손상, 접속 상태 확인" },
+      { id: "snake_cable", name: "스테이지 박스/스네이크 케이블", desc: "커넥터 및 채널 매핑 확인" },
+      { id: "grounding", name: "접지 및 노이즈 차폐", desc: "험 노이즈 유무 확인" },
+    ]
+  },
+  {
+    id: "safety",
+    icon: "🛡️",
+    title: "안전 항목",
+    items: [
+      { id: "speaker_rigging", name: "플라이드 스피커 리깅 상태", desc: "볼트, 클램프, 안전 와이어 육안 확인" },
+      { id: "cable_floor", name: "바닥 케이블 정리 상태", desc: "이동 동선 케이블 커버 처리 확인" },
+      { id: "emergency", name: "비상 방송 시스템 연동", desc: "비상 우선권 작동 여부 확인" },
+      { id: "fire", name: "음향실 내 소화기 위치", desc: "유효기간 및 접근성 확인" },
+    ]
+  }
+];
+
+// Render sections
+const container = document.getElementById('sections');
+const states = {}; // {itemId: 'ok'|'warn'|'fail'|null}
+const notes = {};
+
+checkData.forEach(section => {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.innerHTML = `
+    <div class="section-header">
+      <span class="section-icon">${section.icon}</span>
+      <span class="section-title">${section.title}</span>
+      <span class="section-count" id="count-${section.id}">0/${section.items.length}</span>
+    </div>
+    <div class="section-body" id="body-${section.id}"></div>
+  `;
+  container.appendChild(sec);
+
+  const body = sec.querySelector(`#body-${section.id}`);
+  section.items.forEach(item => {
+    states[item.id] = null;
+    notes[item.id] = '';
+
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML = `
+      <div class="item-check-wrap">
+        <button class="radio-btn ok" data-id="${item.id}" data-val="ok" title="정상">✓</button>
+        <button class="radio-btn warn" data-id="${item.id}" data-val="warn" title="주의">△</button>
+        <button class="radio-btn fail" data-id="${item.id}" data-val="fail" title="불량">✕</button>
+      </div>
+      <div class="item-content">
+        <div class="item-name">${item.name}</div>
+        <div class="item-desc">${item.desc}</div>
+        <textarea class="item-note" id="note-${item.id}" rows="2" placeholder="이상 내용 메모..."></textarea>
+      </div>
+    `;
+    body.appendChild(row);
+
+    row.querySelectorAll('.radio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const val = btn.dataset.val;
+        const prev = states[id];
+
+        // Toggle off if same
+        if (prev === val) {
+          states[id] = null;
+          row.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+        } else {
+          states[id] = val;
+          row.querySelectorAll('.radio-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.val === val);
+          });
+        }
+
+        // Show note for warn/fail
+        const noteEl = document.getElementById(`note-${id}`);
+        if (states[id] === 'warn' || states[id] === 'fail') {
+          noteEl.classList.add('visible');
+        } else {
+          noteEl.classList.remove('visible');
+        }
+
+        updateProgress();
+        updateSectionCount(section.id, section.items);
+      });
+    });
+
+    document.getElementById(`note-${item.id}`).addEventListener('input', e => {
+      notes[item.id] = e.target.value;
+    });
+  });
+});
+
+function updateSectionCount(sectionId, items) {
+  const done = items.filter(i => states[i.id] !== null).length;
+  document.getElementById(`count-${sectionId}`).textContent = `${done}/${items.length}`;
+}
+
+function updateProgress() {
+  const total = Object.keys(states).length;
+  const done = Object.values(states).filter(v => v !== null).length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('pctText').textContent = pct + '%';
+}
+
+function submitCheck() {
+  const total = Object.keys(states).length;
+  const done = Object.values(states).filter(v => v !== null).length;
+  const okCount = Object.values(states).filter(v => v === 'ok').length;
+  const warnCount = Object.values(states).filter(v => v === 'warn').length;
+  const failCount = Object.values(states).filter(v => v === 'fail').length;
+
+  // Summary stats
+  document.getElementById('resultSummary').innerHTML = `
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--accent2)">${okCount}</div>
+      <div class="stat-label">정상</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--warn)">${warnCount}</div>
+      <div class="stat-label">주의</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--danger)">${failCount}</div>
+      <div class="stat-label">불량</div>
+    </div>
+  `;
+
+  // Issues list
+  const issues = [];
+  checkData.forEach(sec => {
+    sec.items.forEach(item => {
+      if (states[item.id] === 'warn' || states[item.id] === 'fail') {
+        issues.push({ ...item, status: states[item.id], note: notes[item.id] });
+      }
+    });
+  });
+
+  const issuesEl = document.getElementById('issuesList');
+  if (issues.length > 0) {
+    issuesEl.innerHTML = `<div class="issues-title">⚠ 조치 필요 항목 (${issues.length}건)</div>` +
+      issues.map(i => `
+        <div class="issue-item ${i.status}">
+          <strong>${i.name}</strong>${i.note ? '<br><span style="opacity:0.8">→ ' + i.note + '</span>' : ''}
+        </div>
+      `).join('');
+  } else if (done === total) {
+    issuesEl.innerHTML = `<div style="color:var(--accent2); font-size:13px; text-align:center; padding:12px 0">🎉 모든 항목 정상 확인되었습니다</div>`;
+  } else {
+    issuesEl.innerHTML = `<div style="color:var(--text3); font-size:12px; padding:8px 0">미체크 항목: ${total - done}개</div>`;
+  }
+
+  document.getElementById('resultModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('resultModal').classList.remove('show');
+}
+
+function copyResult() {
+  const inspector = document.getElementById('inspector').value || '미입력';
+  const checkType = document.getElementById('checkType').value;
+  const location = document.getElementById('location').value;
+  const eventName = document.getElementById('eventName').value;
+  const date = new Date().toLocaleDateString('ko-KR');
+
+  const okCount = Object.values(states).filter(v => v === 'ok').length;
+  const warnCount = Object.values(states).filter(v => v === 'warn').length;
+  const failCount = Object.values(states).filter(v => v === 'fail').length;
+
+  let text = `[음향 점검 결과]\n`;
+  text += `일시: ${date}\n점검 유형: ${checkType}\n점검자: ${inspector}\n공간: ${location}`;
+  if (eventName) text += `\n행사명: ${eventName}`;
+  text += `\n\n[결과 요약]\n정상: ${okCount}건 / 주의: ${warnCount}건 / 불량: ${failCount}건\n`;
+
+  const issues = [];
+  checkData.forEach(sec => {
+    sec.items.forEach(item => {
+      if (states[item.id] === 'warn' || states[item.id] === 'fail') {
+        issues.push(`- [${states[item.id] === 'warn' ? '주의' : '불량'}] ${item.name}${notes[item.id] ? ': ' + notes[item.id] : ''}`);
+      }
+    });
+  });
+
+  if (issues.length > 0) {
+    text += `\n[조치 필요 항목]\n` + issues.join('\n');
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    alert('클립보드에 복사되었습니다!\n단톡방, 메일, 보고서에 붙여넣기 하세요.');
+  });
+}
+
+// Set today's date
+const now = new Date();
+document.getElementById('dateDisplay').textContent =
+  now.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+</script>
+</body>
+</html>
